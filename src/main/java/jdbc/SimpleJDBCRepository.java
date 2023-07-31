@@ -16,8 +16,8 @@ import lombok.Setter;
 public class SimpleJDBCRepository {
 
     private static final String createUserSQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES (?,?,?,?);";
-    private static final String updateUserSQL = "DELETE FROM myusers WHERE id = ?;";
-    private static final String deleteUser = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?;";
+    private static final String updateUserSQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?;";
+    private static final String deleteUser = "DELETE FROM myusers WHERE id = ?;";
     private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id = ?;";
     private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstname = ?;";
     private static final String findAllUserSQL = "SELECT * FROM myusers;";
