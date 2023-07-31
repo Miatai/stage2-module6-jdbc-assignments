@@ -21,11 +21,6 @@ public class CustomDataSource implements DataSource {
     private final String url;
     private final String name;
     private final String password;
-    private static final String DB_DRIVER = "postgres.driver";
-    private static final String DB_URL = "postgres.url";
-    private static final String DB_NAME = "postgres.name";
-    private static final String DB_PASSWORD = "postgres.password";
-    private static final String RESOURCE_NAME = "app.properties";
 
     private CustomDataSource(String driver, String url, String password, String name) {
         this.driver = driver;
@@ -38,14 +33,14 @@ public class CustomDataSource implements DataSource {
         if (instance == null) {
             synchronized (CustomDataSource.class) {
                 if (instance == null) {
+                    Properties props = new Properties();
                     try {
-                        Properties properties = new Properties();
-                        properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream(RESOURCE_NAME));
-                        instance = new CustomDataSource(
-                                properties.getProperty(DB_DRIVER),
-                                properties.getProperty(DB_URL),
-                                properties.getProperty(DB_PASSWORD),
-                                properties.getProperty(DB_NAME));
+                        props.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
+                        String driver = props.getProperty("postgres.driver");
+                        String url = props.getProperty("postgres.url");
+                        String name = props.getProperty("postgres.password");
+                        String password = props.getProperty("postgres.name");
+                        instance = new CustomDataSource(driver, url, password, name);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -77,7 +72,7 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public Connection getConnection(String arg0, String arg1) throws SQLException {
-        throw new UnsupportedOperationException("Unimplemented method 'getConnection'");
+        return new CustomConnector().getConnection(url, name, password);
     }
 
     @Override
