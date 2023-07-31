@@ -15,18 +15,17 @@ import lombok.Setter;
 @Setter
 public class SimpleJDBCRepository {
 
-    private static final String createUserSQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES (?,?,?,?);";
-    private static final String updateUserSQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?;";
-    private static final String deleteUser = "DELETE FROM myusers WHERE id = ?;";
-    private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id = ?;";
-    private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstname = ?;";
-    private static final String findAllUserSQL = "SELECT * FROM myusers;";
+    private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES (?,?,?,?);";
+    private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?;";
+    private static final String DELETE_USER = "DELETE FROM myusers WHERE id = ?;";
+    private static final String FIND_USER_BY_ID_SQL = "SELECT * FROM myusers WHERE id = ?;";
+    private static final String FIND_USER_BY_NAME_SQL = "SELECT * FROM myusers WHERE firstname = ?;";
+    private static final String FIND_ALL_USER_SQL = "SELECT * FROM myusers;";
 
     public Long createUser(User user) {
         Long userId = null;
-        try (
-                Connection conn = CustomDataSource.getInstance().getConnection();
-                PreparedStatement ps = conn.prepareStatement(createUserSQL)) {
+        try (Connection conn = CustomDataSource.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(CREATE_USER_SQL)) {
             ps.setLong(1, user.getId());
             ps.setString(2, user.getFirstName());
             ps.setString(3, user.getLastName());
@@ -46,7 +45,7 @@ public class SimpleJDBCRepository {
     public User findUserById(Long userId) {
         User user = null;
         try (Connection conn = CustomDataSource.getInstance().getConnection();
-                PreparedStatement ps = conn.prepareStatement(findUserByIdSQL)) {
+                PreparedStatement ps = conn.prepareStatement(FIND_USER_BY_ID_SQL)) {
             ps.setLong(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -66,7 +65,7 @@ public class SimpleJDBCRepository {
     public User findUserByName(String userName) {
         User user = null;
         try (Connection conn = CustomDataSource.getInstance().getConnection();
-                PreparedStatement ps = conn.prepareStatement(findUserByNameSQL)) {
+                PreparedStatement ps = conn.prepareStatement(FIND_USER_BY_NAME_SQL)) {
             ps.setString(1, userName);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -87,7 +86,7 @@ public class SimpleJDBCRepository {
         List<User> users = new ArrayList<>();
         try (Connection conn = CustomDataSource.getInstance().getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(findAllUserSQL)) {
+                ResultSet rs = stmt.executeQuery(FIND_ALL_USER_SQL)) {
             while (rs.next()) {
                 Long id = rs.getLong(1);
                 String firstname = rs.getString(2);
@@ -103,7 +102,7 @@ public class SimpleJDBCRepository {
 
     public User updateUser(User user) {
         try (Connection conn = CustomDataSource.getInstance().getConnection();
-                PreparedStatement ps = conn.prepareStatement(updateUserSQL)) {
+                PreparedStatement ps = conn.prepareStatement(UPDATE_USER_SQL)) {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
@@ -117,7 +116,7 @@ public class SimpleJDBCRepository {
 
     public void deleteUser(Long userId) {
         try (Connection conn = CustomDataSource.getInstance().getConnection();
-                PreparedStatement ps = conn.prepareStatement(deleteUser)) {
+                PreparedStatement ps = conn.prepareStatement(DELETE_USER)) {
             ps.setLong(1, userId);
             ps.execute();
         } catch (SQLException e) {

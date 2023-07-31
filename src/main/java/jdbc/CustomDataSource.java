@@ -1,10 +1,11 @@
 package jdbc;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ResourceBundle;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -24,7 +25,7 @@ public class CustomDataSource implements DataSource {
     private static final String DB_URL = "postgres.url";
     private static final String DB_NAME = "postgres.name";
     private static final String DB_PASSWORD = "postgres.password";
-    private static final String RESOURCE_NAME = "app";
+    private static final String RESOURCE_NAME = "app.properties";
 
     private CustomDataSource(String driver, String url, String password, String name) {
         this.driver = driver;
@@ -34,15 +35,23 @@ public class CustomDataSource implements DataSource {
     }
 
     public static CustomDataSource getInstance() {
-        if(instance != null){
-            return instance;
+        if (instance == null) {
+            synchronized (CustomDataSource.class) {
+                if (instance == null) {
+                    try {
+                        Properties properties = new Properties();
+                        properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream(RESOURCE_NAME));
+                        instance = new CustomDataSource(
+                                properties.getProperty(DB_DRIVER),
+                                properties.getProperty(DB_URL),
+                                properties.getProperty(DB_PASSWORD),
+                                properties.getProperty(DB_NAME));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        ResourceBundle resource = ResourceBundle.getBundle(RESOURCE_NAME);
-        String driver = resource.getString(DB_DRIVER);
-        String url = resource.getString(DB_URL);
-        String password = resource.getString(DB_PASSWORD);
-        String name = resource.getString(DB_NAME);
-        instance = new CustomDataSource(driver, url, password, name);
         return instance;
     }
 
@@ -90,5 +99,5 @@ public class CustomDataSource implements DataSource {
     public void setLoginTimeout(int arg0) throws SQLException {
         throw new UnsupportedOperationException("Unimplemented method 'setLoginTimeout'");
     }
-    
+
 }
