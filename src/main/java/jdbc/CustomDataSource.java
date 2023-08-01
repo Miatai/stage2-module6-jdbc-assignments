@@ -42,9 +42,9 @@ public class CustomDataSource implements DataSource {
                         String password = props.getProperty("postgres.name");
                         instance = new CustomDataSource(driver, url, password, name);
                         Class.forName(props.getProperty("postgres.driver"));
-                    } catch (IOException e) {
+                    } catch (IOException | ClassNotFoundException e) {
                         e.printStackTrace();
-                    }
+                    } 
                 }
             }
         }
