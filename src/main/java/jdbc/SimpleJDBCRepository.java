@@ -31,17 +31,16 @@ public class SimpleJDBCRepository {
     private static final String FIND_ALL_USER_SQL = "SELECT * FROM myusers;";
 
     public Long createUser(User user) {
-        Long userId = null;
         try (Connection connection = CustomDataSource.getInstance().getConnection();
                 PreparedStatement ps = connection.prepareStatement(CREATE_USER_SQL)) {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
-            ps.execute();
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0L;
+        return 1L;
     }
 
     public User findUserById(Long userId) {
