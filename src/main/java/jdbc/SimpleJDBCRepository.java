@@ -31,16 +31,22 @@ public class SimpleJDBCRepository {
     private static final String FIND_ALL_USER_SQL = "SELECT * FROM myusers;";
 
     public Long createUser(User user) {
+        Long userId = null;
         try (Connection connection = CustomDataSource.getInstance().getConnection();
-                PreparedStatement ps = connection.prepareStatement(CREATE_USER_SQL)) {
+                PreparedStatement ps = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
-            ps.executeUpdate();
+            ps.execute();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    userId = rs.getLong(1);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 1L;
+        return userId;
     }
 
     public User findUserById(Long userId) {
