@@ -37,16 +37,11 @@ public class SimpleJDBCRepository {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
-            ps.executeUpdate();
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    userId = rs.getLong(1);
-                }
-            }
+            ps.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return userId;
+        return 0L;
     }
 
     public User findUserById(Long userId) {
